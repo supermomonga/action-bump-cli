@@ -86,7 +86,9 @@ runs:
 
     - name: Install bump CLI
       shell: bash
-      run: go install github.com/mattn/bump@latest
+      run: |
+        go install github.com/mattn/bump@latest
+        echo "$(go env GOPATH)/bin" >> "${GITHUB_PATH}"
 
     - name: Run bump
       id: bump
