@@ -1,25 +1,28 @@
 # action-bump-cli
 
-[bump](https://github.com/mattn/bump) CLI を使って、任意のファイルのセマンティックバージョンをバンプする GitHub Action です。
+A GitHub Action that bumps semantic versions in any file using the [bump](https://github.com/mattn/bump) CLI.
 
-正規表現パターンでバージョン文字列の位置を指定するため、あらゆるファイル形式に対応できます。
+Since it uses regex patterns to locate version strings, it works with any file format.
+
+> [!NOTE]
+> This project is heavily inspired by [r7kamura/bump-request](https://github.com/r7kamura/bump-request). While bump-request creates pull requests to bump versions, this action focuses on the version bumping step itself, giving you full control over your workflow.
 
 ## Inputs
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| `file` | Yes | バージョン文字列を含むファイルパス |
-| `pattern` | Yes | バージョンを捕捉するキャプチャグループ付き正規表現 |
-| `release_type` | No* | `major`, `minor`, `patch` のいずれか |
-| `version` | No* | 明示的に設定するバージョン文字列（例: `2.0.0`） |
+| `file` | Yes | Path to the file containing the version string |
+| `pattern` | Yes | Regex with a capture group to match the version |
+| `release_type` | No* | One of `major`, `minor`, or `patch` |
+| `version` | No* | Explicit version string to set (e.g. `2.0.0`) |
 
-\* `release_type` と `version` は排他的です。どちらか一方を指定してください。
+\* `release_type` and `version` are mutually exclusive. Specify one or the other.
 
 ## Outputs
 
 | Output | Description |
 |--------|-------------|
-| `version` | バンプ後の新しいバージョン文字列 |
+| `version` | The new version string after bumping |
 
 ## Quick Start
 
@@ -45,14 +48,14 @@
 | pyproject.toml | `version\s*=\s*"(\d+\.\d+\.\d+)"` |
 | VERSION (plain text) | `(\d+\.\d+\.\d+)` |
 
-パターンには正確に **1つのキャプチャグループ** が必要です。キャプチャグループがバージョン文字列にマッチする必要があります。
+The pattern must contain exactly **one capture group** that matches the version string.
 
-## Chaining: 複数フィールドの連鎖バンプ
+## Chaining: Bump Multiple Fields
 
-出力された新バージョンを後続のステップで使うことで、同じファイル内の複数のバージョンフィールドを一括更新できます。
+You can use the output version in subsequent steps to update multiple version fields in the same file.
 
 ```yaml
-# <Version> をバンプして新バージョンを取得
+# Bump <Version> and get the new version
 - uses: supermomonga/action-bump-cli@v1
   id: bump
   with:
@@ -60,7 +63,7 @@
     pattern: '<Version>(\d+\.\d+\.\d+)</Version>'
     release_type: minor
 
-# <FileVersion> にも同じバージョンを設定
+# Set <FileVersion> to the same version
 - uses: supermomonga/action-bump-cli@v1
   with:
     file: MyApp.csproj
@@ -70,23 +73,23 @@
 
 ## Example Workflows
 
-完全なワークフロー例は [`examples/`](examples/) ディレクトリにあります。
+See the [`examples/`](examples/) directory for complete workflow examples.
 
-- [RubyGem](examples/rubygem.yml) - `version.rb` の `VERSION` 定数をバンプ
-- [npm](examples/npm.yml) - `package.json` の `version` フィールドをバンプ
-- [C# (.csproj)](examples/csproj.yml) - `Version`, `FileVersion`, `AssemblyVersion` を連鎖バンプ
+- [RubyGem](examples/rubygem.yml) — Bump the `VERSION` constant in `version.rb`
+- [npm](examples/npm.yml) — Bump the `version` field in `package.json`
+- [C# (.csproj)](examples/csproj.yml) — Chain-bump `Version`, `FileVersion`, and `AssemblyVersion`
 
 ## How It Works
 
-1. 入力パラメータをバリデーション
-2. `go install github.com/mattn/bump@latest` で bump CLI をインストール
-3. `bump` コマンドを `-w` フラグ付きで実行（ファイルを直接書き換え、新バージョンを stdout に出力）
-4. 新バージョンをアクションの出力として設定
+1. Validates input parameters
+2. Installs the bump CLI via `go install github.com/mattn/bump@latest`
+3. Runs `bump` with the `-w` flag (writes the file in-place and prints the new version to stdout)
+4. Sets the new version as the action output
 
 ## Requirements
 
-- GitHub-hosted runner には Go がプリインストールされているため、追加セットアップは不要です
-- Self-hosted runner を使用する場合は、Go がインストールされている必要があります
+- GitHub-hosted runners have Go pre-installed, so no additional setup is needed
+- For self-hosted runners, Go must be installed
 
 ## License
 
