@@ -133,7 +133,7 @@ See the [`examples/`](examples/) directory for complete workflow examples.
 
 - [RubyGem](examples/rubygem.yml) — Bump the `VERSION` constant in `version.rb`
 - [npm](examples/npm.yml) — Bump the `version` field in `package.json`
-- [C# (.csproj)](examples/csproj.yml) — Chain-bump `Version`, `FileVersion`, and `AssemblyVersion`
+- [C# (.csproj)](examples/csproj.yml) — Chain-bump `Version` and `FileVersion`
 
 ## How It Works
 
